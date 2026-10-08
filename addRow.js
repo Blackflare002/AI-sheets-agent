@@ -51,6 +51,26 @@ const addRow = async ({ company, title, date, confidence = 3 }) => {
         "One or more required columns (Date, Company, Title, Confidence) are missing in the spreadsheet.",
     };
   }
-};
 
+  const row = new Array(headers.length).fill("");
+  row[dateCol] = rowDate;
+  row[companyCol] = company.trim();
+  row[titleCol] = title.trim();
+  row[confidenceCol] = confidence;
+
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: process.env.SHEET_ID,
+    range: "Sheet1",
+    valueInputOption: "USER_ENTERED",
+    requestBody: { values: [row] },
+  });
+
+  return {
+    success: true,
+    date: rowDate,
+    company: company.trim(),
+    title: title.trim(),
+    confidence,
+  };
+};
 export default addRow;
